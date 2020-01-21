@@ -1,5 +1,6 @@
 using Flux, Test, Random, Statistics, Documenter
 using Random
+using CUDAapi: has_cuda
 
 Random.seed!(0)
 
@@ -11,6 +12,8 @@ include("utils.jl")
 include("onehot.jl")
 include("optimise.jl")
 include("data.jl")
+include("layers/ctc.jl")
+has_cuda() && include("layers/ctc-gpu.jl")
 
 @info "Testing Layers"
 

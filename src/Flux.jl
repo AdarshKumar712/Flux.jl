@@ -22,6 +22,7 @@ export SGD, Descent, ADAM, Momentum, Nesterov, RMSProp,
 
 
 using CuArrays
+using CUDAapi
 const use_cuda = Ref(false)
 
 include("utils.jl")
@@ -33,6 +34,9 @@ include("layers/basic.jl")
 include("layers/conv.jl")
 include("layers/recurrent.jl")
 include("layers/normalise.jl")
+include("layers/ctc.jl")
+has_cuda() && CuArrays.functional() && include("layers/ctc-gpu.jl")
+export ctc
 
 include("data/Data.jl")
 
