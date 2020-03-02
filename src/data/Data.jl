@@ -3,9 +3,6 @@ module Data
 import ..Flux
 import SHA
 
-using Random: shuffle!
-using Base: @propagate_inbounds
-
 export CMUDict, cmudict
 
 deps(path...) = joinpath(@__DIR__, "..", "..", "deps", path...)
@@ -29,9 +26,6 @@ function __init__()
   mkpath(deps())
 end
 
-include("dataloader.jl")
-export DataLoader
-
 include("mnist.jl")
 export MNIST
 
@@ -47,8 +41,5 @@ using .Sentiment
 
 include("iris.jl")
 export Iris
-
-include("housing.jl")
-export Housing
 
 end

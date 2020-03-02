@@ -125,4 +125,6 @@ onecold(y::AbstractMatrix, labels...) =
 onecold(y::OneHotMatrix, labels...) =
   mapreduce(x -> Flux.onecold(x, labels...), |, y.data, dims = 2, init = 0)
 
-@nograd onecold, onehot, onehotbatch
+# TODO probably still want this as a custom adjoint Zygote
+# onecold(x::TrackedVector, l...) = onecold(data(x), l...)
+# onecold(x::TrackedMatrix, l...) = onecold(data(x), l...)

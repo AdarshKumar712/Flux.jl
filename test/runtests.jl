@@ -1,49 +1,32 @@
-using Flux 
-using Flux.Data
-using Test 
-using Random, Statistics, LinearAlgebra
-using Documenter
-using IterTools: ncycle
+using Flux, Test, Random, Statistics, Documenter
+using Random
 
 Random.seed!(0)
 
 @testset "Flux" begin
 
-  @testset "Utils" begin
-    include("utils.jl")
-  end
+@info "Testing Basics"
 
-  @testset "Onehot" begin
-    include("onehot.jl")
-  end
+include("utils.jl")
+include("onehot.jl")
+include("optimise.jl")
+include("data.jl")
 
-  @testset "Optimise" begin
-    include("optimise.jl")
-  end
+@info "Testing Layers"
 
-  @testset "Data" begin
-    include("data.jl")
-  end
+include("layers/basic.jl")
+include("layers/normalisation.jl")
+include("layers/stateless.jl")
+include("layers/conv.jl")
 
-  @testset "Layers" begin
-    include("layers/basic.jl")
-    include("layers/normalisation.jl")
-    include("layers/stateless.jl")
-    include("layers/conv.jl")
-  end
+if Flux.use_cuda[]
+  include("cuda/cuda.jl")
+else
+  @warn "CUDA unavailable, not testing GPU support"
+end
 
-  @testset "CUDA" begin
-    if Flux.use_cuda[]
-      include("cuda/cuda.jl")
-    else
-      @warn "CUDA unavailable, not testing GPU support"
-    end
-  end
+if VERSION >= v"1.2"
+  doctest(Flux)
+end
 
-  @testset "Docs" begin
-    if VERSION >= v"1.2"
-      doctest(Flux)
-    end
-  end
-
-end # testset Flux
+end

@@ -1,22 +1,9 @@
 using Juno
 import Zygote: Params, gradient
 
-
-"""
-    update!(opt, p, g)
-    update!(opt, ps::Params, gs)
-
-Perform an update step of the parameters `ps` (or the single parameter `p`) 
-according to optimizer `opt`  and the gradients `gs` (the gradient `g`).
-
-As a result, the parameters are mutated and the optimizer's internal state may change. 
-
-  update!(x, x̄)
-  
-Update the array `x` according to `x .-= x̄`.
-"""
 function update!(x::AbstractArray, x̄)
-  x .-= x̄
+  x .+= x̄
+  return x
 end
 
 function update!(opt, x, x̄)
@@ -61,14 +48,13 @@ end
 For each datapoint `d` in `data` computes the gradient of `loss(d...)` through
 backpropagation and calls the optimizer `opt`.
 
-In case datapoints `d` are of numeric array type, assumes no splatting is needed 
-and computes the gradient of `loss(d)`.
-
 Takes a callback as keyword argument `cb`. For example, this will print "training"
 every 10 seconds:
 
-  train!(loss, params, data, opt,
-         cb = throttle(() -> println("training"), 10))
+```julia
+Flux.train!(loss, params, data, opt,
+            cb = throttle(() -> println("training"), 10))
+```
 
 The callback can call `Flux.stop()` to interrupt the training loop.
 
@@ -79,14 +65,8 @@ function train!(loss, ps, data, opt; cb = () -> ())
   cb = runall(cb)
   @progress for d in data
     try
-      if d isa AbstractArray{<:Number}
-        gs = gradient(ps) do
-          loss(d)
-        end
-      else
-        gs = gradient(ps) do
-          loss(d...)
-        end
+      gs = gradient(ps) do
+        loss(d...)
       end
       update!(opt, ps, gs)
       cb()

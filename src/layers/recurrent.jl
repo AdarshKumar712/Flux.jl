@@ -45,7 +45,8 @@ Base.show(io::IO, m::Recur) = print(io, "Recur(", m.cell, ")")
 """
     reset!(rnn)
 
-Reset the hidden state of a recurrent layer back to its original value.
+Reset the hidden state of a recurrent layer back to its original value. See also
+`truncate!`.
 
 Assuming you have a `Recur` layer `rnn`, this is roughly equivalent to
 

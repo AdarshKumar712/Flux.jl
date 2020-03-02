@@ -28,6 +28,7 @@ function load()
 end
 
 """
+
     labels()
 
 Get the labels of the iris dataset, a 150 element array of strings listing the
@@ -52,6 +53,7 @@ function labels()
 end
 
 """
+
     features()
 
 Get the features of the iris dataset.  This is a 4x150 matrix of Float64
