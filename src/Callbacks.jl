@@ -8,7 +8,7 @@ Function to initialise global variables required in various callback functions.
 """
 function init_cb()
     global ctr = 0                     #global counter for how many times the callback has been called
-    global stop = false
+    global stop_itr = false
     global loss_history = []
     global best_acc = 0
     global best_loss = Inf
@@ -22,7 +22,7 @@ Callback that terminates training when a NaN loss is encountered. Here, x and y 
 """
 function terminateOnNaN(x,y)
        if isnan(loss(x,y))
-           stop = true
+           stop_itr = true
            @info "NaN loss, Terminating execution!!!!"
            stop()
            end
@@ -68,9 +68,9 @@ Arguments:
     monitor: Quantity to be monitored for the provided (x,y). Can take values 'acc' or 'loss'. Default set to 'loss'
 """
 
-function lrdecay(x,y;factor = 0.2,loss = loss,accuracy_fn = nothing,patience=5,min_lr = 0.000001,monitor="loss")
+function lrdecay(x,y;factor = 0.2,loss = loss,accuracy_fn = nothing,patience=5,min_lr = 1e-5,monitor="loss")
             global ctr+=1
-            global best_acc,last_improvement,best_loss,stop
+            global best_acc,last_improvement,best_loss,stop_itr
             if monitor == "acc"
                acc = accuracy_fn(x,y)
                if acc>best_acc
@@ -82,7 +82,7 @@ function lrdecay(x,y;factor = 0.2,loss = loss,accuracy_fn = nothing,patience=5,m
                        opt.eta = factor*opt.eta
                        last_improvement = ctr
                    else 
-                       stop = true
+                       stop_itr = true
                        @warn("We are calling this converged")
                        stop()
                    end
@@ -98,7 +98,7 @@ function lrdecay(x,y;factor = 0.2,loss = loss,accuracy_fn = nothing,patience=5,m
                        opt.eta = factor*opt.eta
                        last_improvement = ctr
                    else 
-                       stop=true
+                       stop_itr = true
                        @warn("We are calling this as converged")
                        stop()
                    end
@@ -131,8 +131,8 @@ Arguments:
 
     filepath: Path to the file where the model is needed to be saved.
 
-    save_best_model_only: save only the best model to `filename` provided, if set to 1. Else save models at every improvement to different files as {epoch}_filename.
-                          Default set to 1.
+    save_best_model_only: save only the best model to `filename` provided, if set to 1. 
+			  Else save models at every improvement to different files as {epoch}_filename. Default set to 1.
 
 In order to load the saved model, use:  `BSON.@load joinpath(path, filename) m ctr acc` or `BSON.@load joinpath(path, filename) m ctr l`<br> 
 where m represent a chain of all the sub-models of the function. To access each individual model, use m.layers[i] for ith sub-model.
@@ -140,7 +140,7 @@ where m represent a chain of all the sub-models of the function. To access each 
 function model_checkpoint(x,y,model_arr;loss = loss,accuracy_fn = nothing,monitor = "loss",
 		filename= "model.bson",path = "./",verbose=1,save_best_model_only=1)   
 	global ctr = ctr + 1
-    global best_acc,last_improvement,best_loss,stop
+    global best_acc,last_improvement,best_loss
     if  monitor == "acc"
             acc = accuracy_fn(x,y)
         if acc>=best_acc
