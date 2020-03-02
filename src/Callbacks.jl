@@ -1,7 +1,11 @@
 include("optimise/Optimise.jl")
 using .Optimise: stop
 using BSON
+"""
+   init_cb()
 
+Function to initialise global variables required in various callback functions.
+"""
 function init_cb()
     global ctr = 0                     #global counter for how many times the callback has been called
     global stop = false
@@ -13,6 +17,7 @@ end
 
 """
    terminateOnNaN(x,y) 
+
 Callback that terminates training when a NaN loss is encountered. Here, x and y could be training data (x,y) or can be different.
 """
 function terminateOnNaN(x,y)
@@ -25,6 +30,7 @@ function terminateOnNaN(x,y)
 
 """
     history(x,y,accuracy)
+
 Callback that records loss and accuracy into an array. Array can be accessed using `loss_history`.
 
 Arguments:
@@ -54,8 +60,8 @@ Arguments:
     
     accuracy_fn: function to be used to calculate accuracy, when monitor set to 'acc'. Otherwise, optional
 
-    patience: number of epochs that produced the monitored quantity with no improvement, after which learning rate will be reduced or training stopped.
-              Default value set to 5.
+    patience: number of epochs that produced the monitored quantity with no improvement, 
+	after which learning rate will be reduced or training stopped. Default value set to 5.
 
     min_lr: lower bound on the learning rate. If no improvement seen even below that after 'patience' number of steps, the training is terminated.
 
@@ -94,7 +100,7 @@ function lrdecay(x,y;factor = 0.2,loss = loss,accuracy_fn = nothing,patience=5,m
                    else 
                        stop=true
                        @warn("We are calling this as converged")
-                        stop()
+                       stop()
                    end
                 end
         else
@@ -103,14 +109,16 @@ function lrdecay(x,y;factor = 0.2,loss = loss,accuracy_fn = nothing,patience=5,m
 end
 
 """
-    model_checkpoint(x,y,model_arr;loss = loss,accuracy_fn=nothing,monitor="acc",filename= "model.bson",path = "./",verbose=1,save_best_model_only =1)
+    model_checkpoint(x,y,model_arr;loss = loss,accuracy_fn=nothing,monitor="acc",
+				filename= "model.bson",path = "./",verbose=1,save_best_model_only =1)
 
 Saves the model after each epoch whenever the monitored qunatity improves.
 
 Arguments:
-    (x,y):  Could be training data (x,y) or can be different
+    x,y:  Could be training data (x,y) or can be different
     
-    model_arr: Array of sub-models being used in the model. For a single model input should be [model]. For more sub_models provide models in sequence,[model1,model2,....] 
+    model_arr: Array of sub-models being used in the model. For a single model input should be [model]. 
+	       For more sub_models provide models in sequence,[model1,model2,....] 
 
     loss: function to be used to calculate loss, when monitor set to 'loss'. Otherwise, optional.
     
@@ -118,7 +126,8 @@ Arguments:
 
     monitor: monitor: quantity to be monitored for the provided (x,y). Can take values 'acc' or 'loss'. Default set to 'loss'
 
-    filename: name of the model file with extension .BSON to which model is needed to be saved. By default, saved to 'model.bson'.
+    filename: name of the model file with extension .BSON to which model is needed to be saved. 
+	      By default, saved to 'model.bson'.
 
     filepath: Path to the file where the model is needed to be saved.
 
@@ -128,7 +137,8 @@ Arguments:
 In order to load the saved model, use:  `BSON.@load joinpath(path, filename) m ctr acc` or `BSON.@load joinpath(path, filename) m ctr l`<br> 
 where m represent a chain of all the sub-models of the function. To access each individual model, use m.layers[i] for ith sub-model.
 """
-function model_checkpoint(x,y,model_arr;loss = loss,accuracy_fn = nothing,monitor = "loss",filename= "model.bson",path = "./",verbose=1,save_best_model_only=1)   
+function model_checkpoint(x,y,model_arr;loss = loss,accuracy_fn = nothing,monitor = "loss",
+		filename= "model.bson",path = "./",verbose=1,save_best_model_only=1)   
 	global ctr = ctr + 1
     global best_acc,last_improvement,best_loss,stop
     if  monitor == "acc"
