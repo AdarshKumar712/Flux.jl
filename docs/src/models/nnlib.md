@@ -7,15 +7,25 @@ Non-linearities that go between layers of your model. Note that, unless otherwis
 ```@docs
 NNlib.elu
 NNlib.gelu
+NNlib.celu
+NNlib.rrelu
+NNlib.relu6
 NNlib.leakyrelu
 NNlib.logcosh
 NNlib.logsigmoid
 NNlib.sigmoid
+NNlib.hardsigmoid
+NNlib.hardtanh
 NNlib.relu
 NNlib.selu
 NNlib.softplus
 NNlib.softsign
 NNlib.swish
+NNlib.mish
+NNlib.lisht
+NNlib.trelu
+NNlib.tanhshrink
+NNlib.softshrink
 ```
 
 ## Softmax
